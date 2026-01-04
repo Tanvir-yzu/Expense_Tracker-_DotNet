@@ -60,7 +60,7 @@ namespace ExpenseTracker
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("╔═══════════════════════════════════════════════════════════╗");
-            Console.WriteLine("║                 MODERN EXPENSE TRACKER v2.2               ║");
+            Console.WriteLine("║                 MODERN EXPENSE TRACKER v2.3               ║");
             Console.WriteLine($"║                 {subTitle,-42}║");
             Console.WriteLine("╚═══════════════════════════════════════════════════════════╝");
             Console.ResetColor();
@@ -102,68 +102,72 @@ namespace ExpenseTracker
         }
         #endregion
 
-        #region Summaries (New Detailed Feature)
-        static void GenerateDetailedSummary()
-        {
-            DrawHeader("DETAILED REPORTS");
-            if (!data.Expenses.Any()) { ShowError("No data available."); return; }
-
-            // 1. Overview Totals
-            decimal totalAllTime = data.Expenses.Sum(x => x.Amount);
-            var monthlyGroup = data.Expenses.GroupBy(x => new { x.Date.Year, x.Date.Month })
-                                            .OrderByDescending(g => g.Key.Year).ThenByDescending(g => g.Key.Month)
-                                            .First();
-            
-            Console.WriteLine("\n  ⚡ QUICK STATS");
-            Console.WriteLine($"  ├─ Total Expenses (All Time): {totalAllTime:C2}");
-            Console.WriteLine($"  └─ Latest Month ({monthlyGroup.Key.Month}/{monthlyGroup.Key.Year}): {monthlyGroup.Sum(x => x.Amount):C2}");
-
-            // 2. Category Breakdown (Current Month)
-            Console.WriteLine("\n  📂 CATEGORY BREAKDOWN (LATEST MONTH)");
-            Console.WriteLine("  ───────────────────────────────────────────────────────────");
-            var catSummary = monthlyGroup.GroupBy(x => x.Category)
-                                         .OrderByDescending(g => g.Sum(v => v.Amount));
-
-            foreach (var cat in catSummary)
-            {
-                decimal catTotal = cat.Sum(x => x.Amount);
-                double catPercent = (double)(catTotal / monthlyGroup.Sum(x => x.Amount)) * 100;
-                Console.WriteLine($"  {cat.Key,-15} │ {catTotal,10:C2} │ {catPercent,5:F1}% " + GetMiniBar(catPercent));
-            }
-
-            // 3. Top Single Expenses
-            Console.WriteLine("\n  🚩 TOP 3 LARGEST EXPENSES (THIS MONTH)");
-            var top3 = monthlyGroup.OrderByDescending(x => x.Amount).Take(3);
-            foreach (var item in top3)
-            {
-                Console.WriteLine($"  • {item.Amount:C2} - {item.Description} ({item.Category})");
-            }
-
-            Console.WriteLine("\n  ───────────────────────────────────────────────────────────");
-            Console.WriteLine("  Press any key to return...");
-            Console.ReadKey();
-        }
-
-        static string GetMiniBar(double percent)
-        {
-            int width = 10;
-            int filled = (int)(percent / 10);
-            return " [" + new string('■', filled) + new string(' ', width - filled) + "]";
-        }
-        #endregion
-
-        #region Other Operations
+        #region Core Methods
         static void AddExpense()
         {
             DrawHeader("ADD ENTRY");
             Console.Write("\n  Description: "); string desc = Console.ReadLine() ?? "";
             Console.Write("  Category:    "); string cat = Console.ReadLine() ?? "General";
-            Console.Write("  Amount:      "); if (!decimal.TryParse(Console.ReadLine(), out decimal amt)) return;
+            Console.Write("  Amount:      "); if (!decimal.TryParse(Console.ReadLine(), out decimal amt)) { ShowError("Invalid Amount."); return; }
             Console.Write("  Date (yyyy-mm-dd) [Blank=Today]: "); string dIn = Console.ReadLine();
             DateTime dt = string.IsNullOrWhiteSpace(dIn) ? DateTime.Now : DateTime.Parse(dIn);
 
             data.Expenses.Add(new Expense { Id = data.NextId++, Description = desc, Category = cat, Amount = amt, Date = dt });
             ShowSuccess("Entry Saved!");
+        }
+
+        static void UpdateExpense()
+        {
+            DrawHeader("UPDATE EXPENSE");
+            Console.Write("\n  Enter Expense ID to modify: ");
+            if (!int.TryParse(Console.ReadLine(), out int id)) { ShowError("Invalid ID format."); return; }
+
+            var exp = data.Expenses.FirstOrDefault(x => x.Id == id);
+            if (exp == null) { ShowError("Expense not found."); return; }
+
+            Console.WriteLine("\n  Editing ID: " + id);
+            Console.WriteLine("  (Press ENTER to keep current value)");
+            Console.WriteLine("  ───────────────────────────────────");
+
+            // Update Description
+            Console.Write($"  Description [{exp.Description}]: ");
+            string newDesc = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newDesc)) exp.Description = newDesc;
+
+            // Update Category
+            Console.Write($"  Category    [{exp.Category}]: ");
+            string newCat = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(newCat)) exp.Category = newCat;
+
+            // Update Amount
+            Console.Write($"  Amount      [{exp.Amount:C2}]: ");
+            string amtInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(amtInput) && decimal.TryParse(amtInput, out decimal newAmt))
+            {
+                exp.Amount = newAmt;
+            }
+
+            // Update Date
+            Console.Write($"  Date (yyyy-MM-dd) [{exp.Date:yyyy-MM-dd}]: ");
+            string dateInput = Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(dateInput) && DateTime.TryParse(dateInput, out DateTime newDate))
+            {
+                exp.Date = newDate;
+            }
+
+            ShowSuccess("Expense updated successfully!");
+        }
+
+        static void DeleteExpense()
+        {
+            DrawHeader("DELETE EXPENSE");
+            Console.Write("\n  Enter ID to delete: ");
+            if (int.TryParse(Console.ReadLine(), out int id))
+            {
+                int count = data.Expenses.RemoveAll(x => x.Id == id);
+                if (count > 0) ShowSuccess("Deleted.");
+                else ShowError("ID not found.");
+            }
         }
 
         static void FilterMenu()
@@ -172,8 +176,8 @@ namespace ExpenseTracker
             Console.WriteLine("\n  [1] Category  [2] Keyword  [3] Expensive (>100)  [Any] All");
             var c = Console.ReadLine();
             IEnumerable<Expense> q = data.Expenses;
-            if (c == "1") { Console.Write("  Category: "); string s = Console.ReadLine()?.ToLower(); q = q.Where(x => x.Category.ToLower() == s); }
-            else if (c == "2") { Console.Write("  Keyword: "); string s = Console.ReadLine()?.ToLower(); q = q.Where(x => x.Description.ToLower().Contains(s)); }
+            if (c == "1") { Console.Write("  Category: "); string s = Console.ReadLine()?.ToLower(); q = q.Where(x => x.Category.ToLower() == (s ?? "")); }
+            else if (c == "2") { Console.Write("  Keyword: "); string s = Console.ReadLine()?.ToLower(); q = q.Where(x => x.Description.ToLower().Contains(s ?? "")); }
             else if (c == "3") { q = q.Where(x => x.Amount > 100); }
 
             DisplayTable(q.OrderByDescending(x => x.Date).ToList());
@@ -195,34 +199,49 @@ namespace ExpenseTracker
             Console.WriteLine("\n  Press any key..."); Console.ReadKey();
         }
 
-        static void UpdateExpense()
+        static void GenerateDetailedSummary()
         {
-            Console.Write("\n  Enter ID: "); if (!int.TryParse(Console.ReadLine(), out int id)) return;
-            var e = data.Expenses.FirstOrDefault(x => x.Id == id);
-            if (e != null) { Console.Write("  New Desc: "); string d = Console.ReadLine(); if (!string.IsNullOrEmpty(d)) e.Description = d; ShowSuccess("Updated!"); }
-        }
+            DrawHeader("DETAILED REPORTS");
+            if (!data.Expenses.Any()) { ShowError("No data available."); return; }
 
-        static void DeleteExpense()
-        {
-            Console.Write("\n  Enter ID: "); if (int.TryParse(Console.ReadLine(), out int id)) { data.Expenses.RemoveAll(x => x.Id == id); ShowSuccess("Deleted!"); }
+            decimal totalAllTime = data.Expenses.Sum(x => x.Amount);
+            var latest = data.Expenses.OrderByDescending(x => x.Date).First();
+            var monthlyGroup = data.Expenses.Where(x => x.Date.Month == latest.Date.Month && x.Date.Year == latest.Date.Year);
+
+            Console.WriteLine("\n  ⚡ QUICK STATS");
+            Console.WriteLine($"  ├─ Total Expenses (All Time): {totalAllTime:C2}");
+            Console.WriteLine($"  └─ Current Month Total:        {monthlyGroup.Sum(x => x.Amount):C2}");
+
+            Console.WriteLine("\n  📂 CATEGORY BREAKDOWN (THIS MONTH)");
+            Console.WriteLine("  ───────────────────────────────────────────────────────────");
+            foreach (var cat in monthlyGroup.GroupBy(x => x.Category).OrderByDescending(g => g.Sum(v => v.Amount)))
+            {
+                decimal catTotal = cat.Sum(x => x.Amount);
+                double catPercent = (double)(catTotal / monthlyGroup.Sum(x => x.Amount)) * 100;
+                Console.WriteLine($"  {cat.Key,-15} │ {catTotal,10:C2} │ {catPercent,5:F1}% [" + new string('■', (int)catPercent / 10).PadRight(10) + "]");
+            }
+
+            Console.WriteLine("\n  Press any key to return...");
+            Console.ReadKey();
         }
 
         static void SetBudget()
         {
-            Console.Write("\n  Limit: "); if (decimal.TryParse(Console.ReadLine(), out decimal b)) data.MonthlyBudget = b;
-            ShowSuccess("Budget Set!");
+            Console.Write("\n  New Monthly Limit: ");
+            if (decimal.TryParse(Console.ReadLine(), out decimal b)) { data.MonthlyBudget = b; ShowSuccess("Budget Updated!"); }
         }
 
         static void SaveAndExit()
         {
-            File.WriteAllText(DataFilePath, JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true }));
-            Console.WriteLine("\n  Data Encrypted & Saved. Goodbye!");
+            var options = new JsonSerializerOptions { WriteIndented = true };
+            File.WriteAllText(DataFilePath, JsonSerializer.Serialize(data, options));
+            ShowSuccess("Data Saved Successfully!");
         }
 
         static void LoadData()
         {
-            if (File.Exists(DataFilePath)) data = JsonSerializer.Deserialize<UserData>(File.ReadAllText(DataFilePath)) ?? new UserData();
-            ShowSuccess("Data Loaded Successfully!");
+            if (File.Exists(DataFilePath))
+                data = JsonSerializer.Deserialize<UserData>(File.ReadAllText(DataFilePath)) ?? new UserData();
         }
 
         static string Truncate(string s, int m) => s.Length <= m ? s : s[..(m - 2)] + "..";
