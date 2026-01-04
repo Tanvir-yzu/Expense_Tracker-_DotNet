@@ -13,8 +13,29 @@
       "Amount": 300,
       "Category": "Mobile",
       "Date": "2025-12-25T00:00:00"
+    },
+    {
+      "Id": 4,
+      "Description": "pencile",
+      "Amount": 450,
+      "Category": "pen",
+      "Date": "2026-01-04T23:24:12.5088184+08:00"
+    },
+    {
+      "Id": 5,
+      "Description": "bag",
+      "Amount": 1200,
+      "Category": "school",
+      "Date": "2026-01-04T23:24:36.0529203+08:00"
+    },
+    {
+      "Id": 6,
+      "Description": "book",
+      "Amount": 750,
+      "Category": "school",
+      "Date": "2024-01-01T00:00:00"
     }
   ],
-  "NextId": 4,
-  "MonthlyBudget": 0
+  "NextId": 7,
+  "MonthlyBudget": 10000
 }

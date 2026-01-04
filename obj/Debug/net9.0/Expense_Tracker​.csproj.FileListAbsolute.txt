@@ -12,3 +12,4 @@ D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\refint\Expense_Tracker
 D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.pdb
 D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.genruntimeconfig.cache
 D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\ref\Expense_Tracker​.dll
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.sourcelink.json
