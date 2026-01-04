@@ -222,6 +222,7 @@ namespace ExpenseTracker
         static void LoadData()
         {
             if (File.Exists(DataFilePath)) data = JsonSerializer.Deserialize<UserData>(File.ReadAllText(DataFilePath)) ?? new UserData();
+            ShowSuccess("Data Loaded Successfully!");
         }
 
         static string Truncate(string s, int m) => s.Length <= m ? s : s[..(m - 2)] + "..";
