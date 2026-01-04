@@ -1,0 +1,14 @@
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.GeneratedMSBuildEditorConfig.editorconfig
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.AssemblyInfoInputs.cache
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.AssemblyInfo.cs
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.csproj.CoreCompileInputs.cache
+D:\Programming\DOTNET\Expense_Tracker​\bin\Debug\net9.0\Expense_Tracker​.exe
+D:\Programming\DOTNET\Expense_Tracker​\bin\Debug\net9.0\Expense_Tracker​.deps.json
+D:\Programming\DOTNET\Expense_Tracker​\bin\Debug\net9.0\Expense_Tracker​.runtimeconfig.json
+D:\Programming\DOTNET\Expense_Tracker​\bin\Debug\net9.0\Expense_Tracker​.dll
+D:\Programming\DOTNET\Expense_Tracker​\bin\Debug\net9.0\Expense_Tracker​.pdb
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.dll
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\refint\Expense_Tracker​.dll
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.pdb
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\Expense_Tracker​.genruntimeconfig.cache
+D:\Programming\DOTNET\Expense_Tracker​\obj\Debug\net9.0\ref\Expense_Tracker​.dll
