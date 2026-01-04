@@ -1,0 +1,20 @@
+{
+  "Expenses": [
+    {
+      "Id": 1,
+      "Description": "Pen",
+      "Amount": 50,
+      "Category": "School",
+      "Date": "2026-01-04T23:35:20.7924708+08:00"
+    },
+    {
+      "Id": 2,
+      "Description": "Bag",
+      "Amount": 1500,
+      "Category": "School",
+      "Date": "2026-01-04T23:36:03.4629422+08:00"
+    }
+  ],
+  "NextId": 3,
+  "MonthlyBudget": 5000
+}
