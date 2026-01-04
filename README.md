@@ -126,8 +126,8 @@ Modern Expense Tracker is a command-line application designed to help individual
 
 1. **Clone or Download** the repository
    ```bash
-   git clone <repository-url>
-   cd Expense_Tracker
+   git clone https://github.com/Tanvir-yzu/Expense_Tracker-_DotNet
+   cd Expense_Tracker-_DotNet
    ```
 
 2. **Restore Dependencies** (if any)
